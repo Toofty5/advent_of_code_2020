@@ -17,7 +17,6 @@ total = 0
 
 for ticket in nearby_tickets:
 
-
     for item in ticket:    
         valid = False
         
@@ -32,6 +31,4 @@ for ticket in nearby_tickets:
 
 
 print(total)
-
-
 
