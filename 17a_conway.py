@@ -1,14 +1,14 @@
 import numpy as np
 
-def neighbors(index_z, index_y, index_x):
+def neighbors(index_w, index_z, index_y, index_x):
     # index_z += padding
     # index_x += padding
     # index_y += padding
 
-    check_view = pocket_array[index_z-1:index_z+2 , index_y-1:index_y+2 ,
+    check_view = pocket_array[index_w-1:index_w +2, index_z-1:index_z+2 , index_y-1:index_y+2 ,
             index_x-1: index_x+2]
     # print(check_view)
-    return np.count_nonzero(check_view) - check_view[1,1,1]
+    return np.count_nonzero(check_view) - check_view[1,1,1,1]
     
 
 
@@ -41,15 +41,16 @@ print(fourth, depth, height, width)
 print(pocket_array.shape)
 
 for i in range(0, turns):
-    for (z,y,x), val in np.ndenumerate(pocket_array):
-        if (z in range(1, depth - 1) and
+    for (w,z,y,x), val in np.ndenumerate(pocket_array):
+        if (w in range(1, fourth-1) and
+            z in range(1, depth - 1) and
             y in range(1, height - 1) and
             x in range(1, width - 1)):
-            this_neighbors = neighbors(z,y,x)
+            this_neighbors = neighbors(w,z,y,x)
             if val and this_neighbors in [2,3]:
-                    new_array[z,y,x] = 1
+                    new_array[w,z,y,x] = 1
             elif not val and this_neighbors == 3:
-                    new_array[z,y,x] = 1
+                    new_array[w,z,y,x] = 1
     pocket_array = new_array
     new_array = np.zeros(pocket_array.shape)
 
