@@ -20,15 +20,16 @@ padding = turns + 2
 width = len(in_file[0]) + (padding * 2) + 1
 height = len(in_file) + (padding * 2) + 1
 depth = 1 + (padding * 2)
+fourth = 1 + (padding * 2)
 
-pocket_array = np.zeros([depth, height, width])
+pocket_array = np.zeros([fourth, depth, height, width])
 
 for i, line in enumerate(in_file):
     for j, char in enumerate(line):
         if char == '#':
-            pocket_array[padding, j+padding, i+padding] = 1
+            pocket_array[padding, padding, j+padding, i+padding] = 1
         else:
-            pocket_array[padding, j+padding, i+padding] = 0
+            pocket_array[padding, padding, j+padding, i+padding] = 0
 
 
 
@@ -36,7 +37,7 @@ for i, line in enumerate(in_file):
 new_array = np.zeros(pocket_array.shape)
 
 active_indices = []
-print(depth, height, width)
+print(fourth, depth, height, width)
 print(pocket_array.shape)
 
 for i in range(0, turns):
