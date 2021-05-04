@@ -1,88 +1,78 @@
-import itertools as it
 
+# return list of strings
+def valid_strings(rule_num):
+    # rules_dict contains lists of tuples
+    this_rule = rules_dict[rule_num]
 
+    if all([isinstance(rule_item, str) for rule_item in this_rule]):
+        return this_rule
 
-def valid_strings(rule_set):
+    elif len(this_rule) == 1:
+        return eval_rules(this_rule[0])
 
-
-    # single list, no forks
-    if len(rule_set) == 1: 
-        return_list = []
-        single_rule = [rules[x] for x in rule_set[0]]
-
-        for thing in single_rule:
-            if isinstance(thing, str):
-                return_list.append([thing])
-            else:
-                return_list.append(valid_strings(thing))
-
-        # print(f"joining {return_list}")
-        return_list = ["".join(thing) for thing in it.product(*return_list)]
-
-        #print(f"return_list {return_list}")
-
-        if len(return_list) == 1:
-            return "".join(return_list[0])
-        else:
-            return return_list
-
-
-    # multiple lists
     else:
+        return eval_rules(this_rule[0]) + eval_rules(this_rule[1])
+
+#return list of strings, but takes tuple as input
+def eval_rules(rule_tuple):
+    if len(rule_tuple) == 1:
+        (single_rule,) = rule_tuple
+        return valid_strings(single_rule)
+
+
+    else:
+        rule1, rule2 = rule_tuple
+        #list1, list2 = valid_strings(rule1), valid_strings(rule2)
+        list1 = valid_strings(rule1)
+        list2 = valid_strings(rule2)
+        return [x + y for x in list1 for y in list2]
         
-        #print(f"forked input {rule_set}")
-        return_list = [valid_strings([x]) for x in rule_set]
-        #print(f"forked return {list(return_list)}")
 
-        if all([isinstance(x, str) for x in return_list]):
-            return return_list
+
+input_str = open("input", "r").read()
+rules_str, messages_str = input_str.split('\n\n')
+
+# build rules_dict
+
+rules_dict = {}
+
+for rule_line in rules_str.split('\n'):
+    rule_num_str, rule_str = [thing.strip() for thing in rule_line.split(':')]
+
+    rule_num = int(rule_num_str)
+
+    rule_piped = rule_str.split('|')
+
+    if len(rule_piped) == 1:
+
+        if rule_str == "\"a\"":
+            rules_dict[rule_num] = ['a']
+            a_index = rule_num
+
+        elif rule_str == "\"b\"":
+            rules_dict[rule_num] = ['b']
+            b_index = rule_num
+
         else:
-            product_list = it.product(*return_list)
-            return ["".join(thing) for thing in product_list]
+            rules_dict[rule_num] = [tuple(map(int, rule_str.split()))]
 
-
-
-rules_str, messages_str = [section.strip() for section in open('input',
-    'r').read().split('\n\n')]
-
-rules_lines = rules_str.split('\n')
-
-rules = [""] * len(rules_lines)
-
-a_index, b_index = 0,0
-
-for line in rules_lines:
-    index_str, rule_str = line.split(':')
-
-    index = int(index_str)
-
-    if '|' in rule_str:
-        pair_a_str, pair_b_str = rule_str.split('|')
-        rule1 = [int(x) for x in pair_a_str.split()]
-        rule2 = [int(x) for x in pair_b_str.split()]
-
-        rules[index] = [rule1, rule2]
-    elif 'a' in rule_str:
-        rules[index] = 'a'
-        a_index = index
-    elif 'b' in rule_str:
-        rules[index] = 'b'
-        b_index = index
     else:
-        rules[index] = [[int(x) for x in rule_str.split()]]
+        rule1_str, rule2_str = rule_piped
+        rule1 = tuple(map(int, rule1_str.split()))
+        rule2 = tuple(map(int, rule2_str.split()))
 
 
+        rules_dict[rule_num] = [rule1, rule2]
 
+allstrings = valid_strings(0)
+total = 0
 
-#go through all the single-rule lines
-for i, rule in enumerate(rules):
-    if len(rule) == 1 and rule not in ['a','b']:
-        single_rule = rule[0]
-        if len(single_rule) == 1:
-            rules[i] = rules[single_rule[0]]
+# now parse messages and evaluate
+messages_list = messages_str.split()
+for thing in messages_list:
+    if thing in allstrings:
+        total += 1
+        print(thing)
 
-#for i, rule in enumerate(rules):
-#    print(i, rule)
-
-my_list = valid_strings([[0]])
-
+print(len(messages_list))
+print(total)
