@@ -44,7 +44,7 @@ def eval_rules(rule_tuple):
 
 
 
-input_str = open("input", "r").read()
+input_str = open("input2", "r").read()
 rules_str, messages_str = input_str.split('\n\n')
 
 # build rules_dict
@@ -78,17 +78,29 @@ for rule_line in rules_str.split('\n'):
 
         rules_dict[rule_num] = rules
 
+#allstrings = valid_strings(0)
 
-allstrings = valid_strings(0)
+corrected_list = []
+fortytwos = valid_strings(42)
+thirtyones = valid_strings(31)
+breakpoint()
 
+for i in range(1,8) :
+    for j in range(1,5):
+        if i > j:
+            print(i,j)
+            all_fortytwos = ["".join(thing) for thing in itertools.product(fortytwos, repeat=i)]
+            all_thirtyones = ["".join(thing) for thing in itertools.product(thirtyones, repeat=j)]
+            corrected = all_fortytwos + all_thirtyones
 
+print("Corrected list produced")
 
 total = 0
 
 # now parse messages and evaluate
 messages_list = messages_str.split()
 for thing in messages_list:
-    if thing in allstrings:
+    if thing in corrected_list:
         total += 1
 
 print(len(messages_list))
