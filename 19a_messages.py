@@ -1,4 +1,5 @@
 import itertools
+import textwrap
 
 # return list of strings
 def valid_strings(rule_num):
@@ -83,15 +84,18 @@ for rule_line in rules_str.split('\n'):
 corrected_list = []
 fortytwos = valid_strings(42)
 thirtyones = valid_strings(31)
-breakpoint()
 
-for i in range(1,8) :
-    for j in range(1,5):
-        if i > j:
-            print(i,j)
-            all_fortytwos = ["".join(thing) for thing in itertools.product(fortytwos, repeat=i)]
-            all_thirtyones = ["".join(thing) for thing in itertools.product(thirtyones, repeat=j)]
-            corrected = all_fortytwos + all_thirtyones
+#for i in range(1,8) :
+#    for j in range(1,5):
+#        if i > j:
+#            print(i,j)
+#            all_fortytwos = ["".join(thing) for thing in itertools.product(fortytwos, repeat=i)]
+#            all_thirtyones = ["".join(thing) for thing in itertools.product(thirtyones, repeat=j)]
+#            corrected = all_fortytwos + all_thirtyones
+#
+
+
+
 
 print("Corrected list produced")
 
@@ -99,8 +103,36 @@ total = 0
 
 # now parse messages and evaluate
 messages_list = messages_str.split()
-for thing in messages_list:
-    if thing in corrected_list:
+
+for message in messages_list:
+
+    message_split = textwrap.wrap(message, 8)
+
+    count_a=0
+    count_b=0
+    valid_message = True
+
+    for substring in message_split:
+        if substring in fortytwos:
+            if count_b != 0:
+                print("42 in suffix", message_split)
+                valid_message = False
+                break
+            else:
+                count_a += 1
+        else:
+            if substring in thirtyones:
+                count_b += 1
+            else:
+                print("invalid string", message_split)
+                valid_message = False
+                break
+
+    if not count_a > count_b > 0:
+        print(f"count_a: {count_a}, count_b: {count_b}", message_split)
+        valid_message = False
+
+    if valid_message:
         total += 1
 
 print(len(messages_list))
