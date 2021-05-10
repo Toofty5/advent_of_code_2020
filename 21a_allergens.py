@@ -35,11 +35,21 @@ for allergen, ingredients in possible_allergens.items():
 
 safe_ingredients = all_ingredients.difference(set.union(*(possible_allergens.values())))
 
-total=0
-for ingredients, allergens in food_list:
-    for ingredient in ingredients:
-        if ingredient in safe_ingredients:
-            total += 1
 
-print(total)
+known_allergens = set()
 
+while len(known_allergens) < 8:
+
+    for allergen, ingredients in possible_allergens.items():
+        candidates = possible_allergens[allergen] - safe_ingredients
+        others = [others for others in possible_allergens.values() if others != candidates]
+        candidates = candidates.difference(*others, safe_ingredients)
+
+        if len(candidates) == 1:
+            possible_allergens[allergen] = candidates
+            known_allergens.update(candidates)
+            
+allergen_string = ','.join([list(possible_allergens[i]).pop() for i in sorted(possible_allergens.keys())])
+    
+
+print(allergen_string)
