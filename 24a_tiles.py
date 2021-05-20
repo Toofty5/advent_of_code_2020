@@ -1,6 +1,6 @@
 import re
-ADJACENCIES = [(-1,-1), (0, -1), (-1, 0), (1, 0), (-1, 1), (0, 1)]
-
+ADJACENCIES_ODD = [(1,-1), (0, -1), (-1, 0), (1, 0), (1, 1), (0, 1)]
+ADJACENCIES_EVEN = [(-1,-1), (0, -1), (-1, 0), (1, 0), (-1, 1), (0, 1)]
 
 #return list of adjacent black tiles
 
@@ -8,8 +8,12 @@ def adjacent_black(tile):
     x, y = tile
     #odd-r adjacencies:
     out = []
+    if y % 2 == 0:
+        adjacencies = ADJACENCIES_EVEN
+    else:
+        adjacencies = ADJACENCIES_ODD
 
-    for offset in ADJACENCIES:
+    for offset in adjacencies:
         off_x, off_y = offset
         if (x+off_x, y+off_y) in flipped:
             out.append((x+off_x, y+off_y))
@@ -19,12 +23,17 @@ def adjacent_white(tile):
     x, y = tile
     #odd-r adjacencies:
     out = []
+    if y % 2 == 0:
+        adjacencies = ADJACENCIES_EVEN
+    else:
+        adjacencies = ADJACENCIES_ODD
 
-    for offset in ADJACENCIES:
+    for offset in adjacencies:
         off_x, off_y = offset
         if (x+off_x, y+off_y) not in flipped:
             out.append((x+off_x, y+off_y))
     return out
+
 
 directions = [line.strip() for line in open('input', 'r').readlines()]
 flipped = []
@@ -42,14 +51,16 @@ for line in parsed:
     #odd-r coords
     for step in line:
         if step == 'nw':
+            x += -1 + (y % 2)
             y -= 1
         elif step == 'ne':
+            x += y % 2
             y -= 1
-            x += 1
         elif step == 'sw':
+            x += -1 + (y % 2)
             y += 1
-            x -= 1
         elif step == 'se':
+            x += y % 2
             y += 1
         elif step == 'e':
             x += 1
@@ -64,6 +75,8 @@ for line in parsed:
     else:
         flipped.append((x,y))
 
+print(len(flipped))
+
 for i in range(100):
     print(i, len(flipped))
     new_flip = []
@@ -71,13 +84,16 @@ for i in range(100):
     for tile in flipped:
         adjacent_b = adjacent_black(tile)
         adjacent_w = adjacent_white(tile)
-        adjacencies = len(adjacent_b)
+        adjacencies_b = len(adjacent_b)
 
-        if adjacencies == 0 or adjacencies > 2:
+        #print(adjacent_b)
+        #print(adjacent_w)
+
+        if adjacencies_b == 0 or adjacencies_b > 2:
             new_flip.append(tile)
 
         for w_tile in adjacent_w:
-            if len(adjacent_black(w_tile)) == 2:
+            if w_tile not in new_flip and len(adjacent_black(w_tile)) == 2:
                 new_flip.append(w_tile)
 
     for new_tile in new_flip:
