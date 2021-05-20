@@ -1,45 +1,69 @@
+#return list of 3
+def cup_slice(number):
+    this_number = linked_list[number]
+    this_list = []
+    for i in range(3):
+        this_list.append(this_number)
+        this_number = linked_list[this_number]
+
+    return(this_list)
+
+def offset(start, hops):
+    here = start
+    next_here = linked_list[here]
+
+    for i in range(hops):
+        here = next_here
+        next_here = linked_list[here]
+
+    return here
+
+def print_list():
+    here = 1
+
+    out = []
+
+    for i in range(9):
+        out.append(here)
+        here = linked_list[here]
+    print(out)
+
+
+
+
 input_list = [int(char) for char in '685974213']
+input_list.extend(list(range(10, 1000001)))
 
-input_list = input_list + list(range(10,1000001))
+linked_list = {}
 
+for i, thing in enumerate(input_list):
+    if i == len(input_list) - 1:
+        linked_list[thing] = input_list[0]
+    else:
+        linked_list[thing] = input_list[i+1]
 
+current_cup = input_list[0]
 
-current_cup = input_list[0] 
-for i in range(1000000):
-    # determine destination cup
-    # get the index of current cup
-    # reindex list to bring current cup to front
-    # get pickup slice (3 right after current)
-    # pull out pickup slice
-    # make new current
-    # if this destination works, get its index
-    # drop the slice after the destination index
+for i in range(10000000):
+    if i % 10000 == 0:
+        print(i)
+    slice_head = linked_list[current_cup]
+    slice_tail = linked_list[offset(current_cup, 2)]
 
     dest_cup = current_cup - 1
-    current_index = input_list.index(current_cup)
-    input_list = input_list[current_index:] + input_list[:current_index]
-    pickup = input_list[1:4]
-    input_list = [input_list[0]] + input_list[4:]
-    current_cup = input_list[1]
+    this_slice = cup_slice(current_cup)
+
+    while dest_cup in this_slice or dest_cup == 0:
+        dest_cup = (dest_cup - 1) % 1000001
+
+    linked_list[current_cup] = offset(current_cup, 4)
+    linked_list[slice_tail] = linked_list[dest_cup]
+    linked_list[dest_cup] = slice_head
+
+    current_cup = linked_list[current_cup]
+
+print_list()    
+
+
+
     
-
-
-    while True:
-        if(dest_cup in input_list):
-            dest_index = input_list.index(dest_cup)+1
-            break
-        else:
-            print(f"destination cup {dest_cup} not in list.")
-            dest_cup = (dest_cup - 1) % 10
-
-    
-    input_list[dest_index:dest_index] = pickup
-
-
-    print(i, current_cup, dest_cup)
-    
-
-start_index = input_list.index(1)
-out_list = input_list[start_index:start_index+3] 
-print(''.join([str(thing) for thing in out_list]))
-breakpoint()
